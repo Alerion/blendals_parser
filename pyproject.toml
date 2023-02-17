@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "blendals_parser"
+version = "0.1.0"
+description = ""
+authors = ["Dmytro Kostochko <alerion.um@gmail.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "3.9"
+orjson = "^3.8.6"
+lxml = "^4.9.2"
+typer = "^0.7.0"
+soundfile = "^0.12.1"
+numpy = "^1.24.2"
+rich = "^13.3.1"
+
+[tool.poetry.dev-dependencies]
+black = "^23.1.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
