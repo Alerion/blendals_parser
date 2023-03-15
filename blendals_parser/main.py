@@ -27,6 +27,9 @@ def parse(
         writable=False,
         readable=True,
         resolve_path=True,
+    ),
+    output_file: Path = typer.Argument(
+        ...,
     )
 ):
     live_set_parser = LiveSetParser(als_file)
@@ -39,7 +42,7 @@ def parse(
     # print(track)
 
     song = live_set_to_song(live_set)
-    with open(SONG_FILE_PATH, "w") as f:
+    with output_file.open(mode="w") as f:
         json = orjson.dumps(song, option=orjson.OPT_INDENT_2)
         f.write(json.decode("utf-8"))
     print(f"Saved song to {SONG_FILE_PATH}")

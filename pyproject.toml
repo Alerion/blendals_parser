@@ -6,7 +6,7 @@ authors = ["Dmytro Kostochko <alerion.um@gmail.com>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "3.9"
+python = "^3.9"
 orjson = "^3.8.6"
 lxml = "^4.9.2"
 typer = "^0.7.0"
