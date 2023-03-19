@@ -121,8 +121,10 @@ def get_audio_file_path(sample_ref_element: Element, directory: Path) -> Path:
 def get_midi_tracks(live_set_element: Element) -> list[MidiTrack]:
     output = []
     for midi_track_element in live_set_element.xpath("./Tracks/MidiTrack"):
+        has_drum_rack = bool(midi_track_element.xpath("./DeviceChain/DeviceChain/Devices/DrumGroupDevice"))
         midi_track = MidiTrack(
             name=_get_track_name(midi_track_element),
+            has_drum_rack=has_drum_rack,
             midi_clips=get_midi_clips(midi_track_element),
             _element=midi_track_element,
         )
@@ -192,17 +194,18 @@ def get_clip_end(clip_element: Element) -> float:
 def get_key_tracks(midi_clip_element: Element) -> list[KeyTrack]:
     output = []
     for key_track_element in midi_clip_element.xpath("./Notes/KeyTracks/KeyTrack"):
+        midi_key = int(key_track_element.xpath("./MidiKey")[0].get("Value"))
         key_track = KeyTrack(
             id=key_track_element.get("Id"),
-            midi_key=int(key_track_element.xpath("./MidiKey")[0].get("Value")),
-            midi_notes=get_midi_notes(key_track_element),
+            midi_key=midi_key,
+            midi_notes=get_midi_notes(key_track_element, midi_key),
             _element=key_track_element,
         )
         output.append(key_track)
     return output
 
 
-def get_midi_notes(key_track_element: Element) -> list[MidiNote]:
+def get_midi_notes(key_track_element: Element, midi_key: int) -> list[MidiNote]:
     output = []
     for midi_note_element in key_track_element.xpath("./Notes/MidiNoteEvent"):
         if midi_note_element.get("IsEnabled") == "false":
@@ -212,6 +215,7 @@ def get_midi_notes(key_track_element: Element) -> list[MidiNote]:
             time=float(midi_note_element.get("Time")),
             velocity=round(float(midi_note_element.get("Velocity"))),
             duration=float(midi_note_element.get("Duration")),
+            midi_key=midi_key,
             _element=midi_note_element,
         )
         output.append(midi_note)

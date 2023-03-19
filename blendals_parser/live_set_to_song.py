@@ -79,6 +79,7 @@ def get_notes_from_key_track(
                     start=note_start,
                     end=node_end,
                     velocity=midi_note.velocity,
+                    midi_key=key_track.midi_key,
                 )
             )
 
@@ -96,6 +97,7 @@ def get_notes_from_key_track(
                 start=note_start,
                 end=node_end,
                 velocity=midi_note.velocity,
+                midi_key=key_track.midi_key,
             )
         )
 

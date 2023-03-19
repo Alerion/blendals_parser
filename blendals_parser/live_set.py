@@ -41,6 +41,7 @@ class AudioChannelPoint:
 @dataclass
 class MidiTrack:
     name: str
+    has_drum_rack: bool
     midi_clips: list["MidiClip"]
     _element: Optional[Element] = field(default=None, repr=False)
 
@@ -84,4 +85,5 @@ class MidiNote:
     time: float
     duration: float
     velocity: int
+    midi_key: int
     _element: Optional[Element] = field(default=None, repr=False)

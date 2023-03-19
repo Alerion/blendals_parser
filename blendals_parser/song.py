@@ -27,6 +27,7 @@ class Note:
     start: float
     end: float
     velocity: int
+    midi_key: int
 
 
 @dataclass
