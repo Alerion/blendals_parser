@@ -4,7 +4,14 @@ from blendals_parser.song import Song, MidiTrack, Note, AudioTrack, Point
 
 
 def live_set_to_song(liveset: live_set.LiveSet) -> Song:
-    song = Song(bpm=liveset.bpm, midi_tracks=[], audio_tracks=[])
+    song = Song(
+        name=liveset.name,
+        bpm=liveset.bpm,
+        time_signature_numerator=liveset.time_signature_numerator,
+        time_signature_denominator=liveset.time_signature_denominator,
+        midi_tracks=[],
+        audio_tracks=[]
+    )
 
     for midi_track in liveset.midi_tracks:
         # Generate notes for each midi key from all midi clips.
@@ -17,10 +24,9 @@ def live_set_to_song(liveset: live_set.LiveSet) -> Song:
                 tracks_notes[midi_key].extend(notes)
 
         # Generate unique notes sequence per midi track and midi key.
-        name = midi_track.name
         for midi_key, notes in tracks_notes.items():
             track = MidiTrack(
-                id=f"{name}:{midi_key}",
+                id=_get_midi_track_name(midi_track, midi_key),
                 notes=notes,
             )
             song.midi_tracks.append(track)
@@ -33,6 +39,19 @@ def live_set_to_song(liveset: live_set.LiveSet) -> Song:
         song.audio_tracks.append(right_channel_track)
 
     return song
+
+
+def _get_midi_track_name(midi_track: live_set.MidiTrack, midi_key) -> str:
+    if not midi_track.has_drum_rack:
+        return f"{midi_track.name}:{midi_key}"
+
+    branch_name = midi_key
+    for branch in midi_track.drum_ruck_branches:
+        if branch.midi_key == midi_key:
+            branch_name = branch.name
+            break
+
+    return f"{midi_track.name}:{branch_name}"
 
 
 def get_track_notes_from_midi_clip(

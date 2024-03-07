@@ -6,7 +6,7 @@ Parse Ableton Live project.
 
 ```
 python3.9 -m venv venv
-. venv/bin/activate
+. venv/bin/activate 
 POETRY_VIRTUALENVS_CREATE=false poetry install
 ```
 
@@ -15,3 +15,7 @@ POETRY_VIRTUALENVS_CREATE=false poetry install
 ```
 python -m blendals_parser.main parse <path to .als file>
 ```
+
+# Bugs
+
+Time signature parsing does not work. Can't find it in als file.

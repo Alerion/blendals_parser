@@ -29,16 +29,21 @@ def parse(
         resolve_path=True,
     ),
     output_file: Path = typer.Argument(
-        ...,
-    )
+        SONG_FILE_PATH,
+    ),
+    time_signature_numerator: int = typer.Option(4),
+    time_signature_denominator: int = typer.Option(4),
 ):
     live_set_parser = LiveSetParser(als_file)
     live_set = live_set_parser.get_live_set()
+    # Set time signature manually.
+    live_set.time_signature_numerator = time_signature_numerator
+    live_set.time_signature_denominator = time_signature_denominator
 
     save_xml_to_file(live_set._element, "live_set.xml")
-    # track = live_set.tracks[2]
-    # if track._element is not None:
-    #     save_xml_to_file(track._element, "track.xml")
+    # midi_track = live_set.midi_tracks[0]
+    # if midi_track._element is not None:
+    #     save_xml_to_file(midi_track._element, "midi_track.xml")
     # print(track)
 
     song = live_set_to_song(live_set)

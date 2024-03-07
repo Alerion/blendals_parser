@@ -13,6 +13,7 @@ from blendals_parser.live_set import (
     MidiClip,
     MidiNote,
     MidiTrack,
+    DrumRuckBranch,
     TimeSignature,
     AudioTrack,
     AudioClip,
@@ -34,7 +35,10 @@ class LiveSetParser:
         live_set_element: Element = als_xml.xpath("/Ableton/LiveSet")[0]
 
         live_set = LiveSet(
+            name=self.als_file_path.stem,
             bpm=get_bpm(live_set_element),
+            time_signature_numerator=4,
+            time_signature_denominator=4,
             midi_tracks=get_midi_tracks(live_set_element),
             audio_tracks=get_audio_tracks(live_set_element, self.directory),
             _element=live_set_element,
@@ -54,7 +58,7 @@ def get_audio_tracks(live_set_element: Element, directory: Path) -> list[AudioTr
     output = []
     for audio_track_element in live_set_element.xpath("./Tracks/AudioTrack"):
         midi_track = AudioTrack(
-            name=_get_track_name(audio_track_element),
+            name=_get_element_name(audio_track_element),
             audio_clips=get_audio_clips(audio_track_element, bpm, directory),
             _element=audio_track_element,
         )
@@ -121,10 +125,21 @@ def get_audio_file_path(sample_ref_element: Element, directory: Path) -> Path:
 def get_midi_tracks(live_set_element: Element) -> list[MidiTrack]:
     output = []
     for midi_track_element in live_set_element.xpath("./Tracks/MidiTrack"):
-        has_drum_rack = bool(midi_track_element.xpath("./DeviceChain/DeviceChain/Devices/DrumGroupDevice"))
+        drum_group_device = midi_track_element.xpath("./DeviceChain/DeviceChain/Devices/DrumGroupDevice")
+
+        drum_ruck_branches = []
+        if drum_group_device:
+            branches = drum_group_device[0].xpath("./Branches/DrumBranch")
+            for branch in branches:
+                drum_ruck_branches.append(DrumRuckBranch(
+                    name=_get_element_name(branch),
+                    midi_key=_get_branch_midi_key(branch),
+                ))
+
         midi_track = MidiTrack(
-            name=_get_track_name(midi_track_element),
-            has_drum_rack=has_drum_rack,
+            name=_get_element_name(midi_track_element),
+            has_drum_rack=bool(drum_group_device),
+            drum_ruck_branches=drum_ruck_branches,
             midi_clips=get_midi_clips(midi_track_element),
             _element=midi_track_element,
         )
@@ -132,11 +147,20 @@ def get_midi_tracks(live_set_element: Element) -> list[MidiTrack]:
     return output
 
 
-def _get_track_name(element: Element) -> str:
-    name = element.xpath("./Name/UserName")[0].get("Value")
+def _get_branch_midi_key(branch: Element) -> int:
+    el = branch.xpath("./BranchInfo/ReceivingNote")[0]
+    # Numeration is reversed.
+    return abs(int(el.get("Value")) - 128)
+
+
+def _get_element_name(element: Element) -> str:
+    name = element.xpath("./Name/UserName")[0].get("Value").strip()
+    if not name:
+        name = element.xpath("./Name/EffectiveName")[0].get("Value").strip()
     # You can add # to the name in Ableton and track number is inserter there.
     if name.startswith("#"):
         name = name[1:].strip()
+
     return name
 
 
