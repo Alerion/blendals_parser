@@ -44,7 +44,6 @@ def parse(
     # midi_track = live_set.midi_tracks[0]
     # if midi_track._element is not None:
     #     save_xml_to_file(midi_track._element, "midi_track.xml")
-    # print(track)
 
     song = live_set_to_song(live_set)
     with output_file.open(mode="w") as f:

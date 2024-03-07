@@ -107,7 +107,7 @@ def get_notes_from_key_track(
     start_offset = start + loops_count * loop_length
     last_loop_length = track_length % loop_length
     for midi_note in midi_notes_in_loop:
-        if midi_note.time > (loop.start + last_loop_length):
+        if midi_note.time >= (loop.start + last_loop_length):
             break
         note_start = start_offset + midi_note.time
         node_end = note_start + midi_note.duration
