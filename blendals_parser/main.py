@@ -31,6 +31,7 @@ def parse(
     output_file: Path = typer.Argument(
         SONG_FILE_PATH,
     ),
+    length_in_bars: int = typer.Option(...),
     time_signature_numerator: int = typer.Option(4),
     time_signature_denominator: int = typer.Option(4),
 ):
@@ -39,6 +40,7 @@ def parse(
     # Set time signature manually.
     live_set.time_signature_numerator = time_signature_numerator
     live_set.time_signature_denominator = time_signature_denominator
+    live_set.length_in_bars = length_in_bars
 
     save_xml_to_file(live_set._element, "live_set.xml")
     # midi_track = live_set.midi_tracks[0]

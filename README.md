@@ -6,7 +6,7 @@ Parse Ableton Live project.
 
 ```
 python3.9 -m venv venv
-. venv/bin/activate 
+. ./venv/Scripts/activate
 POETRY_VIRTUALENVS_CREATE=false poetry install
 ```
 

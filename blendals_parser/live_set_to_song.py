@@ -9,6 +9,7 @@ def live_set_to_song(liveset: live_set.LiveSet) -> Song:
         bpm=liveset.bpm,
         time_signature_numerator=liveset.time_signature_numerator,
         time_signature_denominator=liveset.time_signature_denominator,
+        length_in_bars=liveset.length_in_bars,
         midi_tracks=[],
         audio_tracks=[]
     )

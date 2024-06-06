@@ -8,6 +8,7 @@ class Song:
     bpm: int
     time_signature_numerator: int
     time_signature_denominator: int
+    length_in_bars: float
     # Dacite does not work with build in list that is supported from 3.9. So use List instead of list.
     midi_tracks: List["MidiTrack"]
     audio_tracks: List["AudioTrack"]
@@ -27,8 +28,8 @@ class MidiTrack:
 
 @dataclass
 class Note:
-    start: float
-    end: float
+    start: float  # beats
+    end: float  # beats
     velocity: int
     midi_key: int
 

@@ -39,6 +39,7 @@ class LiveSetParser:
             bpm=get_bpm(live_set_element),
             time_signature_numerator=4,
             time_signature_denominator=4,
+            length_in_bars=1,
             midi_tracks=get_midi_tracks(live_set_element),
             audio_tracks=get_audio_tracks(live_set_element, self.directory),
             _element=live_set_element,
@@ -170,6 +171,7 @@ def get_midi_clips(midi_track_element: Element) -> list[MidiClip]:
         "./DeviceChain/MainSequencer/ClipTimeable/ArrangerAutomation/Events/MidiClip"
     )
     for midi_clip_element in midi_track_element.xpath(xpath):
+        save_xml_to_file(midi_clip_element, f'midi_clip_{midi_clip_element.get("Id")}.xml')
         # TODO: Time is always equal to start. Find out what is the difference.
         # time = float(midi_clip_element.get("Time"))
         midi_clip = MidiClip(
