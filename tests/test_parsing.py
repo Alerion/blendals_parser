@@ -30,6 +30,7 @@ def test_parsing_als_project():
         time_signature_numerator=4,
         time_signature_denominator=4,
         length_in_bars=1,
+        locators=[],
         midi_tracks=[
             MidiTrack(
                 name="Main",
