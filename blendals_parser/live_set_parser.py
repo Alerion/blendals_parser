@@ -17,6 +17,7 @@ from blendals_parser.live_set import (
     TimeSignature,
     AudioTrack,
     AudioClip,
+    Locator,
 )
 from blendals_parser.utils.xml import print_xml, save_xml_to_file
 from blendals_parser.extract_wave_from_audio_file import extract_points_from_audio_file
@@ -33,13 +34,14 @@ class LiveSetParser:
         content = content.replace(b"\n", b"")
         als_xml = etree.fromstring(content)
         live_set_element: Element = als_xml.xpath("/Ableton/LiveSet")[0]
-
+        # save_xml_to_file(live_set_element, "live_set.xml")
         live_set = LiveSet(
             name=self.als_file_path.stem,
             bpm=get_bpm(live_set_element),
             time_signature_numerator=4,
             time_signature_denominator=4,
             length_in_bars=1,
+            locators=get_locators(live_set_element),
             midi_tracks=get_midi_tracks(live_set_element),
             audio_tracks=get_audio_tracks(live_set_element, self.directory),
             _element=live_set_element,
@@ -52,6 +54,19 @@ def get_bpm(live_set_element: Element) -> int:
     tempo_element = live_set_element.xpath(".//Tempo")[0]
     bpm = int(tempo_element.xpath("./Manual")[0].get("Value"))
     return bpm
+
+
+def get_locators(live_set_element: Element) -> list[Locator]:
+    output = []
+    for locator_element in live_set_element.xpath("./Locators/Locators/Locator"):
+        locator = Locator(
+            id=locator_element.get("Id"),
+            name=locator_element.xpath("./Name")[0].get("Value"),
+            time=float(locator_element.xpath("./Time")[0].get("Value")),
+            _element=live_set_element,
+        )
+        output.append(locator)
+    return output
 
 
 def get_audio_tracks(live_set_element: Element, directory: Path) -> list[AudioTrack]:
@@ -75,7 +90,7 @@ def get_audio_clips(
     for audio_clip_element in audio_track_element.xpath(xpath):
         # TODO: Time is always equal to start. Find out what is the difference.
         # time = float(audio_clip_element.get("Time"))
-        save_xml_to_file(audio_clip_element.xpath("./SampleRef")[0], "sample_ref.xml")
+        # save_xml_to_file(audio_clip_element.xpath("./SampleRef")[0], "sample_ref.xml")
         audio_file_path = get_audio_file_path(
             audio_clip_element.xpath("./SampleRef")[0], directory
         )
@@ -94,10 +109,10 @@ def get_audio_clips(
             right_channel_points=right_channel_points,
             _element=audio_clip_element,
         )
-        save_xml_to_file(
-            audio_clip_element,
-            f"audio_clip_{audio_clip.start}_{audio_clip.end}_{audio_clip.name}.xml",
-        )
+        # save_xml_to_file(
+        #     audio_clip_element,
+        #     f"audio_clip_{audio_clip.start}_{audio_clip.end}_{audio_clip.name}.xml",
+        # )
         output.append(audio_clip)
     return output
 
@@ -171,7 +186,7 @@ def get_midi_clips(midi_track_element: Element) -> list[MidiClip]:
         "./DeviceChain/MainSequencer/ClipTimeable/ArrangerAutomation/Events/MidiClip"
     )
     for midi_clip_element in midi_track_element.xpath(xpath):
-        save_xml_to_file(midi_clip_element, f'midi_clip_{midi_clip_element.get("Id")}.xml')
+        # save_xml_to_file(midi_clip_element, f'midi_clip_{midi_clip_element.get("Id")}.xml')
         # TODO: Time is always equal to start. Find out what is the difference.
         # time = float(midi_clip_element.get("Time"))
         midi_clip = MidiClip(

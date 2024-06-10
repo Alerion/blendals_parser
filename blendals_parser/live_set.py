@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from typing import Optional
 
@@ -11,15 +13,24 @@ class LiveSet:
     time_signature_numerator: int
     time_signature_denominator: int
     length_in_bars: int
-    midi_tracks: list["MidiTrack"]
-    audio_tracks: list["AudioTrack"]
+    locators: list[Locator]
+    midi_tracks: list[MidiTrack]
+    audio_tracks: list[AudioTrack]
+    _element: Optional[Element] = field(default=None, repr=False, compare=False)
+
+
+@dataclass
+class Locator:
+    id: str
+    name: str
+    time: float
     _element: Optional[Element] = field(default=None, repr=False, compare=False)
 
 
 @dataclass
 class AudioTrack:
     name: str
-    audio_clips: list["AudioClip"]
+    audio_clips: list[AudioClip]
     _element: Optional[Element] = field(default=None, repr=False, compare=False)
 
 
@@ -29,10 +40,10 @@ class AudioClip:
     name: str
     start: float
     end: float
-    loop: "Loop"
-    time_signature: "TimeSignature"
-    left_channel_points: list["AudioChannelPoint"]
-    right_channel_points: list["AudioChannelPoint"]
+    loop: Loop
+    time_signature: TimeSignature
+    left_channel_points: list[AudioChannelPoint]
+    right_channel_points: list[AudioChannelPoint]
     _element: Optional[Element] = field(default=None, repr=False, compare=False)
 
 
@@ -46,8 +57,8 @@ class AudioChannelPoint:
 class MidiTrack:
     name: str
     has_drum_rack: bool
-    drum_ruck_branches: list["DrumRuckBranch"]
-    midi_clips: list["MidiClip"]
+    drum_ruck_branches: list[DrumRuckBranch]
+    midi_clips: list[MidiClip]
     _element: Optional[Element] = field(default=None, repr=False, compare=False)
 
 
@@ -62,9 +73,9 @@ class MidiClip:
     id: str
     start: float
     end: float
-    loop: "Loop"
-    time_signature: "TimeSignature"
-    key_tracks: list["KeyTrack"]
+    loop: Loop
+    time_signature: TimeSignature
+    key_tracks: list[KeyTrack]
     _element: Optional[Element] = field(default=None, repr=False, compare=False)
 
 
@@ -87,7 +98,7 @@ class TimeSignature:
 class KeyTrack:
     id: str
     midi_key: int
-    midi_notes: list["MidiNote"]
+    midi_notes: list[MidiNote]
     _element: Optional[Element] = field(default=None, repr=False, compare=False)
 
 

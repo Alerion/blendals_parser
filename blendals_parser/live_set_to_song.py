@@ -1,6 +1,6 @@
 from blendals_parser import live_set
 from blendals_parser.live_set import AudioChannelPoint
-from blendals_parser.song import Song, MidiTrack, Note, AudioTrack, Point
+from blendals_parser.song import Song, MidiTrack, Note, AudioTrack, Point, Locator
 
 
 def live_set_to_song(liveset: live_set.LiveSet) -> Song:
@@ -10,9 +10,17 @@ def live_set_to_song(liveset: live_set.LiveSet) -> Song:
         time_signature_numerator=liveset.time_signature_numerator,
         time_signature_denominator=liveset.time_signature_denominator,
         length_in_bars=liveset.length_in_bars,
+        locators=[],
         midi_tracks=[],
         audio_tracks=[]
     )
+
+    for locator in liveset.locators:
+        song.locators.append(Locator(
+            id=locator.id,
+            name=locator.name,
+            time=locator.time,
+        ))
 
     for midi_track in liveset.midi_tracks:
         # Generate notes for each midi key from all midi clips.

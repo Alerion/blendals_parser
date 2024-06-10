@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import List
 
@@ -10,10 +12,11 @@ class Song:
     time_signature_denominator: int
     length_in_bars: float
     # Dacite does not work with build in list that is supported from 3.9. So use List instead of list.
-    midi_tracks: List["MidiTrack"]
-    audio_tracks: List["AudioTrack"]
+    locators: List[Locator]
+    midi_tracks: List[MidiTrack]
+    audio_tracks: List[AudioTrack]
 
-    def get_midi_track(self, track_id: str) -> "MidiTrack":
+    def get_midi_track(self, track_id: str) -> MidiTrack:
         for track in self.midi_tracks:
             if track.id == track_id:
                 return track
@@ -21,9 +24,16 @@ class Song:
 
 
 @dataclass
+class Locator:
+    id: str
+    name: str
+    time: float
+
+
+@dataclass
 class MidiTrack:
     id: str
-    notes: List["Note"]
+    notes: list[Note]
 
 
 @dataclass
@@ -37,7 +47,7 @@ class Note:
 @dataclass
 class AudioTrack:
     id: str
-    points: List["Point"]
+    points: list[Point]
 
 
 @dataclass
